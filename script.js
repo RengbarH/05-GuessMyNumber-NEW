@@ -1,18 +1,24 @@
 'use strict';
 
-// console.log(document.querySelector('.message').textContent);
-// document.querySelector('.message').textContent = '🎉 correct number';
-// console.log(document.querySelector('.message').textContent);
-
-// document.querySelector('.number').textContent = 12;
-// document.querySelector('.score').textContent = 200;
-
-// document.querySelector('.guess').value = 2;
-// console.log(document.querySelector('.guess'));
-
 let secretNumber = Math.floor(Math.random() * 20) + 1;
 let scoreNumber = 20;
 let highScore = 0;
+
+const manipulateDom = function (position, message) {
+  document.querySelector('.' + position).textContent = message;
+};
+
+const missedScore = function (sign, message) {
+  if (scoreNumber + '' + sign + '' + 1) {
+    document.querySelector('.message').textContent = message;
+    scoreNumber--;
+    document.querySelector('.score').textContent = scoreNumber;
+  } else {
+    document.querySelector('.message').textContent =
+      '😥 You lost the game! Try again';
+    document.querySelector('.score').textContent = 0;
+  }
+};
 
 document.querySelector('.check').addEventListener(
   'click',
@@ -22,54 +28,35 @@ document.querySelector('.check').addEventListener(
 
     // When there is no input
     if (!guess || guess >= 21 || guess < 0) {
-      document.querySelector('.message').textContent =
-        '⛔ Please try again checking a number';
+      manipulateDom('message', '⛔ Please try again checking a number');
       document.querySelector('body').style.backgroundColor = '#ff0000';
       //When secret number is matched
     } else if (guess === secretNumber) {
-      document.querySelector('.message').textContent = '🎉 Correct number';
-      document.querySelector('.number').textContent = secretNumber;
+      manipulateDom('message', '🎉 Correct number');
+      manipulateDom('number', secretNumber);
       document.querySelector('body').style.backgroundColor = '#60b347';
       document.querySelector('.number').style.width = '30rem';
       if (scoreNumber > highScore) {
         highScore = scoreNumber;
-        document.querySelector('.highscore').textContent = highScore;
+        manipulateDom('highscore', highScore);
       }
 
       // When guessed number is higher than secret number
     } else if (guess > secretNumber) {
-      if (scoreNumber > 1) {
-        document.querySelector('.message').textContent =
-          ' 📈 Too high... Try again!';
-        scoreNumber--;
-        document.querySelector('.score').textContent = scoreNumber;
-      } else {
-        document.querySelector('.message').textContent =
-          '😥 You lost the game! Try again';
-        document.querySelector('.score').textContent = 0;
-      }
+      missedScore('>', '📈 Too high... Try again!');
       // When guessed number is smaller than secret number
     } else if (guess < secretNumber) {
-      if (scoreNumber > 1) {
-        document.querySelector('.message').textContent =
-          ' 📉 Too low... Try again!';
-        scoreNumber--;
-        document.querySelector('.score').textContent = scoreNumber;
-      } else {
-        document.querySelector('.message').textContent =
-          '😥 You lost the game! Try again';
-        document.querySelector('.score').textContent = 0;
-      }
+      missedScore('<', ' 📉 Too low... Try again!');
     }
   },
 
   document.querySelector('.again').addEventListener('click', function () {
-    document.querySelector('.message').textContent = 'Start guessing...';
+    manipulateDom('message', 'Start guessing...');
     document.querySelector('body').style.backgroundColor = '#222';
     scoreNumber = 20;
-    document.querySelector('.score').textContent = scoreNumber;
-    document.querySelector('.number').textContent = secretNumber;
-    document.querySelector('.number').textContent = '?';
+    manipulateDom('score', scoreNumber);
+    manipulateDom('number', secretNumber);
+    manipulateDom('number', '?');
     document.querySelector('.number').style.width = '15rem';
     document.querySelector('.guess').value = '';
     secretNumber = Math.floor(Math.random() * 20) + 1;
